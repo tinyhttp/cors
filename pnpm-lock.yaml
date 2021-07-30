@@ -9,6 +9,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^4.28.1
   '@typescript-eslint/parser': ^4.28.1
   c8: ^7.7.3
+  es-vary: ^0.1.1
   esbuild-node-loader: ^0.1.1
   eslint: ^7.30.0
   eslint-config-prettier: ^8.3.0
@@ -20,6 +21,9 @@ specifiers:
   supertest-fetch: ^1.4.3
   typescript: ^4.3.5
   uvu: ^0.5.1
+
+dependencies:
+  es-vary: 0.1.1
 
 devDependencies:
   '@commitlint/cli': 12.1.4
@@ -1027,6 +1031,11 @@ packages:
     resolution: {integrity: sha512-fiERjQiCHrXUAToNRT/sh7MtXnfei9n7cF9oVQRUEp9L5BGXsTKSPaXq8L+4v0c/ezfvuTWd/f0JSl5IBRUvSg==}
     engines: {node: '>=12.x'}
     dev: true
+
+  /es-vary/0.1.1:
+    resolution: {integrity: sha512-4UOWrTu8lz5otSyWxcS0LbYz8WyYOEiWHGkBIu0VfhTsY+vtc7+fOSDHsxtEUBeu7mDnTwqsKg5NEXeq5Da1Hg==}
+    engines: {node: '>=12.x'}
+    dev: false
 
   /esbuild-node-loader/0.1.1:
     resolution: {integrity: sha512-n24xYzMfKmPupUZgs0QYBr52HUSh1M1vDtBfkEVa6pdENqo5+U5WP+zaj4Iw2MinuYk1axLW8+NVutrBCkrdmA==}
