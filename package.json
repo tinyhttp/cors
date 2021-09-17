@@ -42,10 +42,10 @@
     "@commitlint/cli": "13.1.0",
     "@commitlint/config-conventional": "13.1.0",
     "@rollup/plugin-typescript": "^8.2.5",
-    "@tinyhttp/app": "2.0.3",
-    "@types/node": "^16.9.1",
-    "@typescript-eslint/eslint-plugin": "^4.31.0",
-    "@typescript-eslint/parser": "^4.31.0",
+    "@tinyhttp/app": "2.0.4",
+    "@types/node": "^16.9.2",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
     "c8": "^7.9.0",
     "esbuild-node-loader": "^0.3.1",
     "eslint": "^7.32.0",
@@ -53,10 +53,10 @@
     "eslint-plugin-prettier": "^4.0.0",
     "expect": "^27.2.0",
     "husky": "^7.0.2",
-    "prettier": "^2.4.0",
+    "prettier": "^2.4.1",
     "rollup": "^2.56.3",
     "supertest-fetch": "^1.4.3",
-    "typescript": "4.3",
+    "typescript": "~4.4.3",
     "uvu": "^0.5.1"
   }
 }
