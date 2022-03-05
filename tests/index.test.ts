@@ -2,7 +2,7 @@ import { suite } from 'uvu'
 import * as assert from 'assert'
 import { makeFetch } from 'supertest-fetch'
 import { cors } from '../src/index'
-import http from 'http'
+import * as http from 'http'
 
 function describe(name: string, fn: (...args: any[]) => void) {
   const s = suite(name)
