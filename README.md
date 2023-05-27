@@ -67,7 +67,7 @@ app
 
 [npm-url]: https://npmjs.com/package/@tinyhttp/cors
 [github-actions]: https://github.com/tinyhttp/cors/actions
-[gh-actions-img]: https://img.shields.io/github/workflow/status/tinyhttp/cors/CI?style=for-the-badge&logo=github&label=&color=hotpink
+[gh-actions-img]: https://img.shields.io/github/actions.workflow/status/tinyhttp/cors/ci.yml?style=for-the-badge&logo=github&label=&color=hotpink
 [cov-img]: https://img.shields.io/coveralls/github/tinyhttp/cors?style=for-the-badge&color=hotpink
 [cov-url]: https://coveralls.io/github/tinyhttp/cors
 [npm-img]: https://img.shields.io/npm/dt/@tinyhttp/cors?style=for-the-badge&color=hotpink
