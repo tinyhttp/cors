@@ -79,7 +79,7 @@ describe('CORS headers tests', (it) => {
   it('should send an error if it is other object types', () => {
     try {
       // @ts-ignore
-      const app = createServer(cors({ origin: { site: 'http://example.com' } }))
+      const middleware = cors({ origin: { site: 'http://example.com' } })
     } catch (e) {
       assert.strictEqual(e.message, 'No other objects allowed. Allowed types is array of strings or RegExp')
     }
