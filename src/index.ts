@@ -23,6 +23,10 @@ function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) 
     }
   }
 
+  if (typeof origin === 'boolean' && origin === false) {
+    return () => undefined
+  }
+
   if (typeof origin === 'string') {
     return function (_, res) {
       res.setHeader('Access-Control-Allow-Origin', origin)
