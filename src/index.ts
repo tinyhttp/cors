@@ -12,6 +12,59 @@ export interface AccessControlOptions {
   preflightContinue?: boolean
 }
 
+function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) => void {
+  function fail() {
+    throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
+  }
+
+  if (typeof origin === 'boolean' && origin === true) {
+    return function (_, res) {
+      res.setHeader('Access-Control-Allow-Origin', '*')
+    }
+  }
+
+  if (typeof origin === 'string') {
+    return function (_, res) {
+      res.setHeader('Access-Control-Allow-Origin', origin)
+    }
+  }
+
+  if (typeof origin === 'function') {
+    return function (req, res) {
+      vary(res, 'Origin')
+      res.setHeader('Access-Control-Allow-Origin', origin(req, res))
+    }
+  }
+
+  if (typeof origin !== 'object') fail()
+
+  if (Array.isArray(origin) && origin.indexOf('*') !== -1) {
+    return function (_, res) {
+      res.setHeader('Access-Control-Allow-Origin', '*')
+    }
+  }
+
+  if (Array.isArray(origin)) {
+    return function (req, res) {
+      vary(res, 'Origin')
+      if (req.headers.origin === undefined) return
+      if (origin.indexOf(req.headers.origin) === -1) return
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+    }
+  }
+
+  if (origin instanceof RegExp) {
+    return function (req, res) {
+      vary(res, 'Origin')
+      if (req.headers.origin === undefined) return
+      if (!origin.test(req.headers.origin)) return
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+    }
+  }
+
+  fail()
+}
+
 /**
  * CORS Middleware
  */
@@ -26,24 +79,11 @@ export const cors = (opts: AccessControlOptions = {}) => {
     optionsSuccessStatus = 204,
     preflightContinue = false
   } = opts
+  const originHeaderHandler = getOriginHeaderHandler(origin)
+
   return (req: Request, res: Response, next?: () => void) => {
-    // Checking the type of the origin property
-    if (typeof origin === 'boolean' && origin === true) {
-      res.setHeader('Access-Control-Allow-Origin', '*')
-    } else if (typeof origin === 'string') {
-      res.setHeader('Access-Control-Allow-Origin', origin)
-    } else if (typeof origin === 'function') {
-      res.setHeader('Access-Control-Allow-Origin', origin(req, res))
-    } else if (typeof origin === 'object') {
-      if (Array.isArray(origin) && (origin.indexOf(req.headers.origin) !== -1 || origin.indexOf('*') !== -1)) {
-        res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
-      } else if (origin instanceof RegExp && origin.test(req.headers.origin)) {
-        res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
-      } else {
-        throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
-      }
-    }
-    if ((typeof origin === 'string' && origin !== '*') || typeof origin === 'function') vary(res, 'Origin')
+    // Setting the Access-Control-Allow-Origin header
+    originHeaderHandler(req, res)
 
     // Setting the Access-Control-Allow-Methods header from the methods array
     res.setHeader('Access-Control-Allow-Methods', methods.join(', ').toUpperCase())
