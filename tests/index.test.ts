@@ -61,6 +61,20 @@ describe('CORS headers tests', (it) => {
         'http://example.com'
       )
     })
+    it('should not set origin when origin header is included in request but not whitelisted', async () => {
+      const app = createServer(cors({ origin: ['http://example.com', 'example.com', 'https://example.com'] }))
+
+      const fetch = makeFetch(app)
+
+      await fetch('/', { headers: { Origin: 'http://not-example.com' } }).expect('Access-Control-Allow-Origin', null)
+    })
+    it('should not set origin when origin header is excluded from request', async () => {
+      const app = createServer(cors({ origin: ['http://example.com', 'example.com', 'https://example.com'] }))
+
+      const fetch = makeFetch(app)
+
+      await fetch('/').expect('Access-Control-Allow-Origin', null)
+    })
   })
   it('should send an error if it is other object types', () => {
     try {
