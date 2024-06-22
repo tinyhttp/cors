@@ -50,15 +50,17 @@ describe('CORS headers tests', (it) => {
       'http://example.com'
     )
   })
-  it('should set origin if it is an array', async () => {
-    const app = createServer(cors({ origin: ['http://example.com', 'example.com', 'https://example.com'] }))
+  describe('when origin is an array of strings', (it) => {
+    it('should set origin when origin header is included in request and whitelisted', async () => {
+      const app = createServer(cors({ origin: ['http://example.com', 'example.com', 'https://example.com'] }))
 
-    const fetch = makeFetch(app)
+      const fetch = makeFetch(app)
 
-    await fetch('/', { headers: { Origin: 'http://example.com' } }).expect(
-      'Access-Control-Allow-Origin',
-      'http://example.com'
-    )
+      await fetch('/', { headers: { Origin: 'http://example.com' } }).expect(
+        'Access-Control-Allow-Origin',
+        'http://example.com'
+      )
+    })
   })
   it('should send an error if it is other object types', () => {
     try {
