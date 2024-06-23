@@ -76,6 +76,14 @@ describe('CORS headers tests', (it) => {
       await fetch('/').expect('Access-Control-Allow-Origin', null)
     })
   })
+  it('should send an error if origin is an iterable containing a non-string', async () => {
+    try {
+      // @ts-ignore
+      const middleware = cors({ origin: [{}, 3, 'abc'] })
+    } catch (e) {
+      assert.strictEqual(e.message, 'No other objects allowed. Allowed types is array of strings or RegExp')
+    }
+  })
   it('should send an error if it is other object types', () => {
     try {
       // @ts-ignore
