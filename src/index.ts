@@ -47,6 +47,9 @@ function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) 
   if (typeof origin !== 'object') fail()
 
   if (isIterable(origin)) {
+    const originArray = Array.from(origin)
+    if (originArray.some((element) => typeof element !== 'string')) fail()
+
     const originSet = new Set(origin)
 
     if (originSet.has('*')) {
