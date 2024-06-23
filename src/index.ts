@@ -12,6 +12,10 @@ export interface AccessControlOptions {
   preflightContinue?: boolean
 }
 
+function isIterable(obj: unknown): obj is Iterable<unknown> {
+  return typeof obj[Symbol.iterator] === 'function'
+}
+
 function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) => void {
   function fail() {
     throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
@@ -42,17 +46,19 @@ function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) 
 
   if (typeof origin !== 'object') fail()
 
-  if (Array.isArray(origin) && origin.indexOf('*') !== -1) {
-    return function (_, res) {
-      res.setHeader('Access-Control-Allow-Origin', '*')
-    }
-  }
+  if (isIterable(origin)) {
+    const originSet = new Set(origin)
 
-  if (Array.isArray(origin)) {
+    if (originSet.has('*')) {
+      return function (_, res) {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+      }
+    }
+
     return function (req, res) {
       vary(res, 'Origin')
       if (req.headers.origin === undefined) return
-      if (origin.indexOf(req.headers.origin) === -1) return
+      if (!originSet.has(req.headers.origin)) return
       res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
     }
   }
