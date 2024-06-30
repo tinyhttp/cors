@@ -19,14 +19,12 @@ const getOriginHeaderHandler = (origin: unknown): ((req: Request, res: Response)
     throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
   }
 
-  if (typeof origin === 'boolean' && origin === true) {
-    return (_, res) => {
-      res.setHeader('Access-Control-Allow-Origin', '*')
-    }
-  }
-
-  if (typeof origin === 'boolean' && origin === false) {
-    return () => undefined
+  if (typeof origin === 'boolean') {
+    return origin
+      ? (_, res) => {
+          res.setHeader('Access-Control-Allow-Origin', '*')
+        }
+      : () => undefined
   }
 
   if (typeof origin === 'string') {
