@@ -91,7 +91,6 @@ export const cors = (opts: AccessControlOptions = {}) => {
   const originHeaderHandler = getOriginHeaderHandler(origin)
 
   return (req: Request, res: Response, next?: () => void) => {
-    // Setting the Access-Control-Allow-Origin header
     originHeaderHandler(req, res)
 
     // Setting the Access-Control-Allow-Methods header from the methods array
