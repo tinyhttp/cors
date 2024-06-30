@@ -12,17 +12,15 @@ export interface AccessControlOptions {
   preflightContinue?: boolean
 }
 
-function isIterable(obj: unknown): obj is Iterable<unknown> {
-  return typeof obj[Symbol.iterator] === 'function'
-}
+const isIterable = (obj: unknown): obj is Iterable<unknown> => typeof obj[Symbol.iterator] === 'function'
 
-function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) => void {
-  function fail() {
+const getOriginHeaderHandler = (origin: unknown): ((req: Request, res: Response) => void) => {
+  const fail = () => {
     throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
   }
 
   if (typeof origin === 'boolean' && origin === true) {
-    return function (_, res) {
+    return (_, res) => {
       res.setHeader('Access-Control-Allow-Origin', '*')
     }
   }
@@ -32,13 +30,13 @@ function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) 
   }
 
   if (typeof origin === 'string') {
-    return function (_, res) {
+    return (_, res) => {
       res.setHeader('Access-Control-Allow-Origin', origin)
     }
   }
 
   if (typeof origin === 'function') {
-    return function (req, res) {
+    return (req, res) => {
       vary(res, 'Origin')
       res.setHeader('Access-Control-Allow-Origin', origin(req, res))
     }
@@ -53,12 +51,12 @@ function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) 
     const originSet = new Set(origin)
 
     if (originSet.has('*')) {
-      return function (_, res) {
+      return (_, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*')
       }
     }
 
-    return function (req, res) {
+    return (req, res) => {
       vary(res, 'Origin')
       if (req.headers.origin === undefined) return
       if (!originSet.has(req.headers.origin)) return
@@ -67,7 +65,7 @@ function getOriginHeaderHandler(origin: unknown): (req: Request, res: Response) 
   }
 
   if (origin instanceof RegExp) {
-    return function (req, res) {
+    return (req, res) => {
       vary(res, 'Origin')
       if (req.headers.origin === undefined) return
       if (!origin.test(req.headers.origin)) return
