@@ -1,5 +1,5 @@
-import { IncomingMessage as Request, ServerResponse as Response } from 'http'
-import { vary } from 'es-vary'
+import type { IncomingMessage as Request, ServerResponse as Response } from 'node:http'
+import { vary } from '@tinyhttp/vary'
 
 export interface AccessControlOptions {
   origin?: string | boolean | ((req: Request, res: Response) => string) | Iterable<string> | RegExp

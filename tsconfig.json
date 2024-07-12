@@ -6,7 +6,6 @@
     "declarationDir": "dist",
     "module": "ESNext",
     "target": "ES2019",
-    "preserveSymlinks": true,
     "moduleResolution": "Node",
     "skipLibCheck": true
   },
