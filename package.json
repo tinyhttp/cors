@@ -1,6 +1,6 @@
 {
   "name": "@tinyhttp/cors",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "description": "CORS middleware for modern Node.js ",
   "homepage": "https://github.com/tinyhttp/cors#readme",
@@ -13,10 +13,18 @@
   },
   "types": "./dist/index.d.ts",
   "exports": "./dist/index.js",
-  "keywords": ["tinyhttp", "node.js", "web framework", "web", "backend"],
+  "keywords": [
+    "tinyhttp",
+    "node.js",
+    "web framework",
+    "web",
+    "backend"
+  ],
   "author": "v1rtl",
   "license": "MIT",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "tsx --test src/*.test.ts",
