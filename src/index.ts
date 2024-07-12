@@ -14,11 +14,11 @@ export interface AccessControlOptions {
 
 const isIterable = (obj: unknown): obj is Iterable<unknown> => typeof obj[Symbol.iterator] === 'function'
 
-const getOriginHeaderHandler = (origin: unknown): ((req: Request, res: Response) => void) => {
-  const fail = () => {
-    throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
-  }
+const failOriginParam = () => {
+  throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
+}
 
+const getOriginHeaderHandler = (origin: unknown): ((req: Request, res: Response) => void) => {
   if (typeof origin === 'boolean') {
     return origin
       ? (_, res) => {
@@ -40,11 +40,11 @@ const getOriginHeaderHandler = (origin: unknown): ((req: Request, res: Response)
     }
   }
 
-  if (typeof origin !== 'object') fail()
+  if (typeof origin !== 'object') failOriginParam()
 
   if (isIterable(origin)) {
     const originArray = Array.from(origin)
-    if (originArray.some((element) => typeof element !== 'string')) fail()
+    if (originArray.some((element) => typeof element !== 'string')) failOriginParam()
 
     const originSet = new Set(origin)
 
@@ -71,7 +71,7 @@ const getOriginHeaderHandler = (origin: unknown): ((req: Request, res: Response)
     }
   }
 
-  fail()
+  failOriginParam()
 }
 
 /**
