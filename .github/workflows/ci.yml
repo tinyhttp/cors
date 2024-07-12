@@ -24,10 +24,10 @@ jobs:
           version: latest
       - name: Run Biome
         run: biome ci .
-      - run: pnpm test:coverage
-      - run: pnpm test:report
+      - name: Run tests
+        run: pnpm cov
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage.lcov
+          path-to-lcov: ./coverage/lcov.info

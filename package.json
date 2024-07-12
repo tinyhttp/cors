@@ -20,8 +20,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "tsx --test src/*.test.ts",
-    "test:coverage": "c8 --include=src pnpm test",
-    "test:report": "c8 report --reporter=text-lcov > coverage.lcov",
+    "cov": "c8 -r lcov pnpm test",
     "lint": "biome lint .",
     "format": "biome format .",
     "check": "biome check ."
