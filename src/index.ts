@@ -2,7 +2,7 @@ import { IncomingMessage as Request, ServerResponse as Response } from 'http'
 import { vary } from 'es-vary'
 
 export interface AccessControlOptions {
-  origin?: string | boolean | ((req: Request, res: Response) => string) | Array<string> | RegExp
+  origin?: string | boolean | ((req: Request, res: Response) => string) | Iterable<string> | RegExp
   methods?: string[]
   allowedHeaders?: string[]
   exposedHeaders?: string[]
@@ -10,6 +10,68 @@ export interface AccessControlOptions {
   maxAge?: number
   optionsSuccessStatus?: number
   preflightContinue?: boolean
+}
+
+const isIterable = (obj: unknown): obj is Iterable<unknown> => typeof obj[Symbol.iterator] === 'function'
+
+const failOriginParam = () => {
+  throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
+}
+
+const getOriginHeaderHandler = (origin: unknown): ((req: Request, res: Response) => void) => {
+  if (typeof origin === 'boolean') {
+    return origin
+      ? (_, res) => {
+          res.setHeader('Access-Control-Allow-Origin', '*')
+        }
+      : () => undefined
+  }
+
+  if (typeof origin === 'string') {
+    return (_, res) => {
+      res.setHeader('Access-Control-Allow-Origin', origin)
+    }
+  }
+
+  if (typeof origin === 'function') {
+    return (req, res) => {
+      vary(res, 'Origin')
+      res.setHeader('Access-Control-Allow-Origin', origin(req, res))
+    }
+  }
+
+  if (typeof origin !== 'object') failOriginParam()
+
+  if (isIterable(origin)) {
+    const originArray = Array.from(origin)
+    if (originArray.some((element) => typeof element !== 'string')) failOriginParam()
+
+    const originSet = new Set(origin)
+
+    if (originSet.has('*')) {
+      return (_, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+      }
+    }
+
+    return (req, res) => {
+      vary(res, 'Origin')
+      if (req.headers.origin === undefined) return
+      if (!originSet.has(req.headers.origin)) return
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+    }
+  }
+
+  if (origin instanceof RegExp) {
+    return (req, res) => {
+      vary(res, 'Origin')
+      if (req.headers.origin === undefined) return
+      if (!origin.test(req.headers.origin)) return
+      res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
+    }
+  }
+
+  failOriginParam()
 }
 
 /**
@@ -26,24 +88,10 @@ export const cors = (opts: AccessControlOptions = {}) => {
     optionsSuccessStatus = 204,
     preflightContinue = false
   } = opts
+  const originHeaderHandler = getOriginHeaderHandler(origin)
+
   return (req: Request, res: Response, next?: () => void) => {
-    // Checking the type of the origin property
-    if (typeof origin === 'boolean' && origin === true) {
-      res.setHeader('Access-Control-Allow-Origin', '*')
-    } else if (typeof origin === 'string') {
-      res.setHeader('Access-Control-Allow-Origin', origin)
-    } else if (typeof origin === 'function') {
-      res.setHeader('Access-Control-Allow-Origin', origin(req, res))
-    } else if (typeof origin === 'object') {
-      if (Array.isArray(origin) && (origin.indexOf(req.headers.origin) !== -1 || origin.indexOf('*') !== -1)) {
-        res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
-      } else if (origin instanceof RegExp && origin.test(req.headers.origin)) {
-        res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
-      } else {
-        throw new TypeError('No other objects allowed. Allowed types is array of strings or RegExp')
-      }
-    }
-    if ((typeof origin === 'string' && origin !== '*') || typeof origin === 'function') vary(res, 'Origin')
+    originHeaderHandler(req, res)
 
     // Setting the Access-Control-Allow-Methods header from the methods array
     res.setHeader('Access-Control-Allow-Methods', methods.join(', ').toUpperCase())
